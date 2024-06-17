@@ -10,7 +10,6 @@ import {
   DialogActions,
   Autocomplete,
 } from "@mui/material";
-import { Add, Remove } from "@mui/icons-material";
 import { createTarget } from "../redux/target";
 import { fetchAreas, fetchEmployees, fetchTerritories } from "../redux/data";
 

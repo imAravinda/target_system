@@ -1,11 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { enqueueSnackbar } from "notistack";
 
 const initialState = {
   targets: [],
   loading: true,
-  targetLoading:true,
-  target:null
+  targetLoading: true,
+  target: null,
 };
 
 const targetSlice = createSlice({
@@ -23,8 +24,16 @@ const targetSlice = createSlice({
       if (Array.isArray(state.targets)) {
         state.targets.push(action.payload);
       } else {
-        // If targets is not an array, replace it with a new array containing the payload
         state.targets = [action.payload];
+      }
+    },
+    updateTargetInState: (state, action) => {
+      const updatedTarget = action.payload;
+      const index = state.targets.findIndex(
+        (target) => target.targetId === updatedTarget.targetId
+      );
+      if (index !== -1) {
+        state.targets[index] = updatedTarget;
       }
     },
     setLoading: (state, action) => {
@@ -32,11 +41,17 @@ const targetSlice = createSlice({
     },
     setTargetLoading: (state, action) => {
       state.targetLoading = action.payload;
-    }
+    },
   },
 });
 
-export const { setTargets, addTarget, setLoading, setTarget, setTargetLoading } = targetSlice.actions;
+export const {
+  setTargets,
+  addTarget,
+  setLoading,
+  setTarget,
+  setTargetLoading,
+} = targetSlice.actions;
 
 // Thunks
 export const fetchTargets = () => async (dispatch) => {
@@ -62,36 +77,67 @@ export const fetchTargetById = (id) => async (dispatch) => {
     console.error("Failed to fetch target", error);
     dispatch(setTargetLoading(false));
   }
-}
+};
 
 export const removeTarget = (id) => async (dispatch) => {
   try {
-    await axios.patch(`/targets/deactive/${id}`);
-    dispatch(fetchTargets());
+    const res = await axios.patch(`/targets/deactive/${id}`);
+    if (res.status === 200 || 201) {
+      enqueueSnackbar(`${res.data.msg}`, {
+        variant: "success",
+      });
+      dispatch(fetchTargets());
+    } else {
+      enqueueSnackbar(`${res.data.msg}`, {
+        variant: "error",
+      });
+    }
   } catch (error) {
-    console.log(error.message);
-  }
-}
-
-export const createTarget = (newTarget) => async (dispatch) => {
-  try {
-   await axios.post("/targets", newTarget);
-    // Ensure target_territories is initialized as an array if not present
-    dispatch(fetchTargets());
-  } catch (error) {
-    console.error("Failed to create target", error);
+    enqueueSnackbar(`${error.message}`, {
+      variant: "error",
+    });
   }
 };
 
-export const updateTarget = (id,updateTarget) => async (dispatch) => {
+export const createTarget = (newTarget) => async (dispatch) => {
   try {
-    await axios.patch(`/targets/${id}`);
-    dispatch(fetchTargets());
-    dispatch(setLoading(false));
+    const res = await axios.post("/targets", newTarget);
+    console.log(res);
+    if (res.status === 200 || 201) {
+      enqueueSnackbar(`${res.data.msg}`, {
+        variant: "success",
+      });
+      dispatch(fetchTargets());
+    } else {
+      enqueueSnackbar(`${res.data.msg}`, {
+        variant: "error",
+      });
+    }
   } catch (error) {
-    console.error("Failed to update target", error);
-    dispatch(setLoading(false));
+    enqueueSnackbar(`${error.message}`, {
+      variant: "error",
+    });
   }
-}
+};
+
+export const updateTarget = (id, updateTarget) => async (dispatch) => {
+  try {
+    const res = await axios.patch(`/targets/${id}`, updateTarget);
+    if (res.status === 200 || 201) {
+      enqueueSnackbar(`${res.data.msg}`, {
+        variant: "success",
+      });
+      dispatch(fetchTargets());
+    } else {
+      enqueueSnackbar(`${res.data.msg}`, {
+        variant: "error",
+      });
+    }
+  } catch (error) {
+    enqueueSnackbar(`${error.message}`, {
+      variant: "error",
+    });
+  }
+};
 
 export default targetSlice.reducer;

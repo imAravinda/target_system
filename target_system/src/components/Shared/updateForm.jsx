@@ -69,8 +69,9 @@ const UpdateTargetForm = ({ open, onClose, id }) => {
   };
 
   const handleTargetChange = (index, field, value) => {
-    const newTargetTerritories = [...targetTerritories];
-    newTargetTerritories[index][field] = value;
+    const newTargetTerritories = targetTerritories.map((territory, idx) =>
+      idx === index ? { ...territory, [field]: value } : territory
+    );
 
     if (field === "target_type") {
       let dynamicValues = [];
@@ -94,12 +95,14 @@ const UpdateTargetForm = ({ open, onClose, id }) => {
       } else if (value === "Annually") {
         dynamicValues = ["2021", "2022", "2023", "2024", "2025"];
       }
+
       newTargetTerritories[index].dynamicValues = dynamicValues;
       newTargetTerritories[index].dynamic_value = "";
     }
 
     setTargetTerritories(newTargetTerritories);
   };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -115,7 +118,8 @@ const UpdateTargetForm = ({ open, onClose, id }) => {
         dynamic_value: territory.dynamic_value,
       })),
     };
-    dispatch(updateTarget(updatedTarget));
+    const id = target.targetId;
+    dispatch(updateTarget(id,updatedTarget));
     handleClose();
   };
 

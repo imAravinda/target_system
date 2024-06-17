@@ -217,17 +217,18 @@ DESC: Update target by id
 */
 export const updateTargetById = async (req, res) => {
   const { id } = req.params;
-  const { t_emp_id, t_designation_id, tr_area_id, territories, target_state } = req.body;
-
+  const { t_emp_id, t_designation_id, tr_area_id, target_territories, target_state } = req.body;
+  console.log(req.body);
+  console.log(id);
   // Validate input
-  if (!id || !t_emp_id || !t_designation_id || !tr_area_id || !territories || !target_state) {
+  if (!id || !t_emp_id || !t_designation_id || !tr_area_id || !target_territories || !target_state) {
     return res.status(400).json({
       status: "MISSING DATA ERROR",
       msg: "All fields are required",
     });
   }
 
-  if (!Array.isArray(territories) || territories.length === 0) {
+  if (!Array.isArray(target_territories) || target_territories.length === 0) {
     return res.status(400).json({
       status: "EMPTY ARRAY ERROR",
       msg: "Territories must be a non-empty array",
@@ -247,31 +248,24 @@ export const updateTargetById = async (req, res) => {
     const existingTerritories = await TargetTerritory.getByTargetId(id);
 
     // Step 3: Update or Insert target_territory records
-    for (const territory of territories) {
+    for (const territory of target_territories) {
       const existingTerritory = existingTerritories.find(
         (et) => et.territoryId === territory.territoryId
       );
-
+      
       if (existingTerritory) {
         // Update existing territory
+        console.log(territory);
         await TargetTerritory.update(id, territory.territoryId, {
           target_value: territory.target_value,
           target_type: territory.target_type,
-          month: territory.month !== undefined ? territory.month : null,
-          year: territory.year !== undefined ? territory.year : null,
-          quater: territory.quater !== undefined ? territory.quater : null,
+          dynamic_value : territory.dynamic_value
         });
       } else {
-        // Insert new territory
-        await TargetTerritory.create({
-          tt_target_id: id,
-          tt_territory_id: territory.territoryId,
-          target_value: territory.target_value,
-          target_type: territory.target_type,
-          month: territory.month !== undefined ? territory.month : null,
-          year: territory.year !== undefined ? territory.year : null,
-          quater: territory.quater !== undefined ? territory.quater : null,
-        });
+        return res.status(404).json({
+          status: "NOT FOUND",
+          msg:"This territory is not found"
+        })
       }
     }
 
