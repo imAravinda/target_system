@@ -66,7 +66,6 @@ const EmployeeTableViewComponent = ({ searchQuery }) => {
   };
 
   const filteredTargets = targets.filter((target) => {
-    console.log(target);
     const searchString = searchQuery;
     return (
       target.targetId.toString().includes(searchString) ||

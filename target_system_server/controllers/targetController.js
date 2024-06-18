@@ -11,7 +11,6 @@ DESC: Create new target
 */
 export const createTarget = async (req, res) => {
   const { t_emp_id, t_designation_id, tr_area_id, target_territories } = req.body;
-  console.log(req.body);
   // Validate input
   if (!t_emp_id || !t_designation_id || !tr_area_id || !target_territories) {
     return res.status(400).json({
@@ -92,7 +91,6 @@ export const getTargets = async (req, res) => {
           targetdata.targetId
         );
         const area = await Area.getById(targetdata.tr_area_id);
-        console.log(area);
         area !== null ? areaName = area.area_name : null;
         const employee = await Employees.getById(targetdata.t_emp_id);
         employee !== null ? employeeName = employee.employee_name : null
@@ -186,7 +184,6 @@ export const getTargetById = async (req, res) => {
     const employee = await Employees.getById(target.t_emp_id);
     const area = await Area.getById(target.tr_area_id);
     const designation = await Designation.getById(target.t_designation_id);
-    console.log(area);
     const target_territories = await TargetTerritory.getByTargetId(
       target.targetId
     );
@@ -218,8 +215,6 @@ DESC: Update target by id
 export const updateTargetById = async (req, res) => {
   const { id } = req.params;
   const { t_emp_id, t_designation_id, tr_area_id, target_territories, target_state } = req.body;
-  console.log(req.body);
-  console.log(id);
   // Validate input
   if (!id || !t_emp_id || !t_designation_id || !tr_area_id || !target_territories || !target_state) {
     return res.status(400).json({
@@ -255,7 +250,6 @@ export const updateTargetById = async (req, res) => {
       
       if (existingTerritory) {
         // Update existing territory
-        console.log(territory);
         await TargetTerritory.update(id, territory.territoryId, {
           target_value: territory.target_value,
           target_type: territory.target_type,

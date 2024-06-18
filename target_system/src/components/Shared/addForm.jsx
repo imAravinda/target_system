@@ -24,7 +24,6 @@ const AddTargetForm = ({ open, onClose }) => {
   const { employees, areas, territories } = useSelector(
     (state) => state.dataReducer
   );
-  console.log(employees);
   useEffect(() => {
     dispatch(fetchEmployees);
     dispatch(fetchAreas);
@@ -37,7 +36,6 @@ const AddTargetForm = ({ open, onClose }) => {
   }, [dispatch, tr_area_id]);
 
   const handleTerritoryChange = (event, newValue) => {
-    console.log(newValue);
     const newTerritories = newValue.map((territory) => ({
       territoryName: territory.territory_name,
       territoryId: territory.territoryId,
@@ -47,7 +45,6 @@ const AddTargetForm = ({ open, onClose }) => {
       dynamicValues: [],
     }));
     const updatedTargetTerritories = newTerritories.map((newTerritory) => {
-      console.log(newTerritory);
       const existingTerritory = targetTerritories.find(
         (t) => t.territoryId === newTerritory.territoryId
       );
@@ -202,7 +199,6 @@ const AddTargetForm = ({ open, onClose }) => {
             </Grid>
             <Grid item xs={12}>
               {targetTerritories.map((territory, index) => {
-                console.log(territory);
                 return (
                   <Grid
                     container

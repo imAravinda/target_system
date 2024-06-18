@@ -53,12 +53,10 @@ export const {
   setTargetLoading,
 } = targetSlice.actions;
 
-// Thunks
 export const fetchTargets = () => async (dispatch) => {
   try {
     const status = "active";
     const response = await axios.get(`/targets/active-targets/${status}`);
-    console.log(response.data.data);
     dispatch(setTargets(response.data.data));
     dispatch(setLoading(false));
   } catch (error) {
@@ -70,7 +68,6 @@ export const fetchTargets = () => async (dispatch) => {
 export const fetchTargetById = (id) => async (dispatch) => {
   try {
     const response = await axios.get(`/targets/${id}`);
-    console.log(response);
     dispatch(setTarget(response.data.data));
     dispatch(setTargetLoading(false));
   } catch (error) {
@@ -102,7 +99,6 @@ export const removeTarget = (id) => async (dispatch) => {
 export const createTarget = (newTarget) => async (dispatch) => {
   try {
     const res = await axios.post("/targets", newTarget);
-    console.log(res);
     if (res.status === 200 || 201) {
       enqueueSnackbar(`${res.data.msg}`, {
         variant: "success",
